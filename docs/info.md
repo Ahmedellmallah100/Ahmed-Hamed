@@ -8,7 +8,7 @@ You can also include images in this folder and reference them in the markdown. E
 -->
 
 ## How it works
-Explain how your project work
+tt_um_example
 ## How to test
 Explain how to use your project
 ## External hardware
