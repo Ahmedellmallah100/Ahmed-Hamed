@@ -1,27 +1,28 @@
-/*
- * Copyright (c) 2024 Your Name
- * SPDX-License-Identifier: Apache-2.0
- */
-
-`default_nettype none
-
-module tt_um_example (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+module ALU (ALU
+    ALuResult, SrcA, SrcB, ALUControl, zero_flag, sign_flag
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+// Ports Declaration
+input  [31:0] SrcA, SrcB;
+input  [2:0]  ALUControl;
+output reg [31:0] ALuResult;
+output zero_flag, sign_flag;
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+// Logic for ALU operations
+always @(*) begin
+    case (ALUControl)
+        3'b000: ALuResult = SrcA + SrcB;          // ADD
+        3'b001: ALuResult = SrcA << SrcB[4:0];    // SHL
+        3'b010: ALuResult = SrcA - SrcB;          // SUB
+        3'b100: ALuResult = SrcA ^ SrcB;          // XOR
+        3'b101: ALuResult = SrcA >> SrcB[4:0];    // SHR
+        3'b110: ALuResult = SrcA | SrcB;          // OR
+        3'b111: ALuResult = SrcA & SrcB;          // AND
+        default: ALuResult = 32'b0;
+    endcase
+ end
 
-endmodule
+assign zero_flag = (ALuResult == 32'b0);
+assign sign_flag = ALuResult[31];
+
+endmodule  // ALU
